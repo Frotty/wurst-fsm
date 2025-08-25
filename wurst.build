@@ -1,0 +1,4 @@
+---
+projectName: ""
+dependencies:
+- https://github.com/wurstscript/wurstStdlib2

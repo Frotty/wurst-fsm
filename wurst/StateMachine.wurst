@@ -1,0 +1,13 @@
+package StateMachine
+import State
+
+public interface StateMachine<T>
+    function update(real delta)
+    function changeState(State<T> newState)
+    function revertToPreviousState() returns boolean
+    function setInitialState(State<T> state)
+    function setGlobalState(State<T> state)
+    function getCurrentState() returns State<T>
+    function getGlobalState() returns State<T>
+    function getPreviousState() returns State<T>
+    function isInState(State<T> state) returns boolean

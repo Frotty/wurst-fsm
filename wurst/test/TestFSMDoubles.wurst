@@ -1,0 +1,30 @@
+package TestFSMDoubles
+import State
+
+public class TestOwner
+    int ticks = 0
+
+public class CountingState<T> implements State<T>
+    string name
+    int enters = 0
+    int updates = 0
+    int exits   = 0
+    string log = ""
+
+    construct(string name)
+        this.name = name
+
+    function clearLog()
+        log = ""
+
+    override function enter(T owner)
+        enters += 1
+        log += name + ":enter;"
+
+    override function update(T owner, real delta)
+        updates += 1
+        log += name + ":update;"
+
+    override function exit(T owner)
+        exits += 1
+        log += name + ":exit;"

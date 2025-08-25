@@ -1,0 +1,102 @@
+package FSMTests
+import FSM
+import State
+import TestFSMDoubles
+
+@test function initial_and_global_enter_called()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+
+    let sGlobal = new CountingState<TestOwner>("G")
+    let sInit   = new CountingState<TestOwner>("C")
+
+    fsm.setGlobalState(sGlobal)
+    fsm.setInitialState(sInit)
+
+    sGlobal.enters.assertEquals(1)
+    sInit.enters.assertEquals(1)
+
+@test function update_calls_global_then_current_in_order()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let G = new CountingState<TestOwner>("G")
+    let C = new CountingState<TestOwner>("C")
+
+    fsm.setGlobalState(G)
+    fsm.setInitialState(C)
+
+    G.clearLog()
+    C.clearLog()
+    fsm.update(0.016)
+
+    G.updates.assertEquals(1)
+    C.updates.assertEquals(1)
+    G.log.assertEquals("G:update;")
+    C.log.assertEquals("C:update;")
+
+@test function change_state_exits_old_and_enters_new_and_sets_previous()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let A = new CountingState<TestOwner>("A")
+    let B = new CountingState<TestOwner>("B")
+
+    fsm.setInitialState(A)
+    fsm.changeState(B)
+
+    A.exits.assertEquals(1)
+    B.enters.assertEquals(1)
+    (fsm.getPreviousState() == A).assertTrue()
+    (fsm.getCurrentState() == B).assertTrue()
+
+@test function revert_to_previous_works_and_returns_false_if_none()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let A = new CountingState<TestOwner>("A")
+    let B = new CountingState<TestOwner>("B")
+
+    // No previous yet
+    fsm.revertToPreviousState().assertFalse()
+
+    fsm.setInitialState(A)
+    fsm.changeState(B)
+    fsm.revertToPreviousState().assertTrue()
+    (fsm.getCurrentState() == A).assertTrue()
+    B.exits.assertEquals(1)
+    A.enters.assertEquals(2) // entered initially and after revert
+
+@test function replacing_global_state_calls_exit_then_enter()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let G1 = new CountingState<TestOwner>("G1")
+    let G2 = new CountingState<TestOwner>("G2")
+
+    fsm.setGlobalState(G1)
+    fsm.setGlobalState(G2)
+
+    G1.exits.assertEquals(1)
+    G2.enters.assertEquals(1)
+
+@test function isInState_and_getters_and_owner()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let A = new CountingState<TestOwner>("A")
+    let B = new CountingState<TestOwner>("B")
+
+    fsm.setInitialState(A)
+    fsm.isInState(A).assertTrue()
+    fsm.isInState(B).assertFalse()
+    (fsm.getOwner() == owner).assertTrue()
+
+@test function ondestroy_calls_exit_on_current_and_global()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let G = new CountingState<TestOwner>("G")
+    let C = new CountingState<TestOwner>("C")
+
+    fsm.setGlobalState(G)
+    fsm.setInitialState(C)
+
+    destroy fsm
+
+    G.exits.assertEquals(1)
+    C.exits.assertEquals(1)

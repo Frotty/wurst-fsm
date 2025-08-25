@@ -1,0 +1,71 @@
+package FSM
+import State
+import StateMachine
+
+public class FSM<T> implements StateMachine<T>
+    T owner
+    State<T> currentState = null
+    State<T> previousState = null
+    State<T> globalState   = null
+
+    construct(T owner)
+        this.owner = owner
+
+    /** If a state really needs the owner outside enter/update/exit. */
+    function getOwner() returns T
+        return owner
+
+    override function update(real delta)
+        if globalState != null
+            globalState.update(owner, delta)
+        if currentState != null
+            currentState.update(owner, delta)
+
+    override function changeState(State<T> newState)
+        previousState = currentState
+        if currentState != null
+            currentState.exit(owner)
+        currentState = newState
+        if currentState != null
+            currentState.enter(owner)
+
+    override function revertToPreviousState() returns boolean
+        if previousState == null
+            return false
+        changeState(previousState)
+        return true
+
+    override function setInitialState(State<T> state)
+        previousState = null
+        currentState  = state
+        if currentState != null
+            currentState.enter(owner)
+
+    override function setGlobalState(State<T> state)
+        if globalState != null
+            globalState.exit(owner)
+        globalState = state
+        if globalState != null
+            globalState.enter(owner)
+
+    override function getCurrentState() returns State<T>
+        return currentState
+
+    override function getGlobalState() returns State<T>
+        return globalState
+
+    override function getPreviousState() returns State<T>
+        return previousState
+
+    override function isInState(State<T> state) returns boolean
+        return currentState == state
+
+    ondestroy
+        if currentState != null
+            currentState.exit(owner)
+            destroy currentState
+            currentState = null
+        if globalState != null
+            globalState.exit(owner)
+            destroy globalState
+            globalState = null
