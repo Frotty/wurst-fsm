@@ -100,3 +100,23 @@ import TestFSMDoubles
 
     G.exits.assertEquals(1)
     C.exits.assertEquals(1)
+
+@test function ondestroy_can_skip_state_destroy_for_singletons()
+    let owner = new TestOwner()
+    let fsm = new FSM<TestOwner>(owner)
+    let G = new DestroyCountingState<TestOwner>("G")
+    let C = new DestroyCountingState<TestOwner>("C")
+
+    fsm.setDestroyStatesOnDestroy(false)
+    fsm.setGlobalState(G)
+    fsm.setInitialState(C)
+
+    destroy fsm
+
+    G.exits.assertEquals(1)
+    C.exits.assertEquals(1)
+    G.destroys.assertEquals(0)
+    C.destroys.assertEquals(0)
+
+    destroy G
+    destroy C

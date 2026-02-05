@@ -1,4 +1,4 @@
 ---
-projectName: ""
+projectName: wurst-fsm
 dependencies:
 - https://github.com/wurstscript/wurstStdlib2

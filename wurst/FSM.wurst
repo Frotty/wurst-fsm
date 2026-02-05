@@ -7,6 +7,7 @@ public class FSM<T> implements StateMachine<T>
     State<T> currentState = null
     State<T> previousState = null
     State<T> globalState   = null
+    boolean destroyStatesOnDestroy = true
 
     construct(T owner)
         this.owner = owner
@@ -14,6 +15,10 @@ public class FSM<T> implements StateMachine<T>
     /** If a state really needs the owner outside enter/update/exit. */
     function getOwner() returns T
         return owner
+
+    /** Control whether current/global states are destroyed when this FSM is destroyed. */
+    function setDestroyStatesOnDestroy(boolean shouldDestroy)
+        destroyStatesOnDestroy = shouldDestroy
 
     override function update(real delta)
         if globalState != null
@@ -63,9 +68,11 @@ public class FSM<T> implements StateMachine<T>
     ondestroy
         if currentState != null
             currentState.exit(owner)
-            destroy currentState
+            if destroyStatesOnDestroy
+                destroy currentState
             currentState = null
         if globalState != null
             globalState.exit(owner)
-            destroy globalState
+            if destroyStatesOnDestroy
+                destroy globalState
             globalState = null

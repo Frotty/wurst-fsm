@@ -28,3 +28,12 @@ public class CountingState<T> implements State<T>
     override function exit(T owner)
         exits += 1
         log += name + ":exit;"
+
+public class DestroyCountingState<T> extends CountingState<T>
+    int destroys = 0
+
+    construct(string name)
+        super(name)
+
+    ondestroy
+        destroys += 1
