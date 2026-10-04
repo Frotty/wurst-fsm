@@ -1,13 +1,13 @@
 package State
 
 /** A generic state for an owner of type T. */
-public interface State<T>
+public interface State<T:>
     function enter(T owner)
     function update(T owner, real delta)
     function exit(T owner)
 
 /** Optional no-op state you can use as a safe default. */
-public class NoOpState<T> implements State<T>
+public class NoOpState<T:> implements State<T>
     override function enter(T owner)
     override function update(T owner, real delta)
     override function exit(T owner)

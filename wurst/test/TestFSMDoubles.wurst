@@ -4,7 +4,7 @@ import State
 public class TestOwner
     int ticks = 0
 
-public class CountingState<T> implements State<T>
+public class CountingState<T:> implements State<T>
     string name
     int enters = 0
     int updates = 0
@@ -29,7 +29,7 @@ public class CountingState<T> implements State<T>
         exits += 1
         log += name + ":exit;"
 
-public class DestroyCountingState<T> extends CountingState<T>
+public class DestroyCountingState<T:> extends CountingState<T>
     int destroys = 0
 
     construct(string name)
