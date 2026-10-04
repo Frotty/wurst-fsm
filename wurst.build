@@ -2,3 +2,4 @@
 projectName: wurst-fsm
 dependencies:
 - https://github.com/wurstscript/wurstStdlib2
+wc3Patch: v3.0

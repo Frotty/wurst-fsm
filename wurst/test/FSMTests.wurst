@@ -3,6 +3,21 @@ import FSM
 import State
 import TestFSMDoubles
 
+class FractionalOwnerState extends NoOpState<real>
+    real seen = 0.
+
+    override function update(real owner, real delta)
+        seen = owner + delta
+
+@Test function specializedOwnerRetainsFractionalValuesThroughVirtualDispatch()
+    let state = new FractionalOwnerState()
+    let fsm = new FSM<real>(0.125)
+    fsm.setInitialState(state)
+    fsm.getOwner().assertEquals(0.125)
+    fsm.update(0.25)
+    state.seen.assertEquals(0.375)
+    destroy fsm
+
 @test function initial_and_global_enter_called()
     let owner = new TestOwner()
     let fsm = new FSM<TestOwner>(owner)

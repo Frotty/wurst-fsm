@@ -2,7 +2,7 @@ package FSM
 import State
 import StateMachine
 
-public class FSM<T> implements StateMachine<T>
+public class FSM<T:> implements StateMachine<T>
     T owner
     State<T> currentState = null
     State<T> previousState = null
